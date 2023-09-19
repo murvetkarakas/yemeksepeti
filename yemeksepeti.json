@@ -47,38 +47,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "products": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "sku": {
-                          "type": "string"
-                        },
-                        "barcode": {
-                          "type": "string"
-                        },
-                        "active": {
-                          "type": "boolean"
-                        },
-                        "price": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "quantity": {
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "maximum_sales_quantity": {
-                          "type": "integer",
-                          "format": "int32"
-                        }
-                      }
-                    }
-                  }
-                }
+                "$ref": "#/components/schemas/ProductsUpdatePayload"
               },
               "examples": {
                 "Multiple product updates": {
@@ -120,23 +89,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean"
-                    },
-                    "job_type": {
-                      "type": "string",
-                      "enum": [
-                        "ASYNC",
-                        "SYNC"
-                      ]
-                    },
-                    "job_id": {
-                      "type": "integer",
-                      "format": "int32"
-                    }
-                  }
+                  "$ref": "#/components/schemas/BulkUpdateResult"
                 },
                 "examples": {
                   "Successful submission": {
@@ -146,6 +99,27 @@
                       "success": true,
                       "job_type": "ASYNC",
                       "job_id": 407304
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "The authorization token is missing or does not have permission to operate in the requested vendorID": {
+                    "summary": "The authorization token is missing or does not have permission to operate in the requested vendorID",
+                    "description": "The authorization token is missing or does not have permission to operate in the requested vendorID",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/products-bulk",
+                      "status": 403,
+                      "error": "Forbidden",
+                      "message": "vendor data provided in 'Authorization' header does not match the requested vendorID",
+                      "requestId": "fddd3b69-2"
                     }
                   }
                 }
@@ -196,27 +170,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "The authorization token is missing or does not have permission to operate in the requested vendorID": {
-                    "summary": "The authorization token is missing or does not have permission to operate in the requested vendorID",
-                    "description": "The authorization token is missing or does not have permission to operate in the requested vendorID",
-                    "value": {
-                      "timestamp": "2022-02-28T00:00:00.000+00:00",
-                      "path": "/api/assortment/v1/vendors/12345/products-bulk",
-                      "status": 403,
-                      "error": "Forbidden",
-                      "message": "vendor data provided in 'Authorization' header does not match the requested vendorID",
-                      "requestId": "fddd3b69-2"
-                    }
-                  }
-                }
-              }
-            }
           }
         },
         "security": [
@@ -248,30 +201,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "sku": {
-                    "type": "string"
-                  },
-                  "barcode": {
-                    "type": "string"
-                  },
-                  "active": {
-                    "type": "boolean"
-                  },
-                  "price": {
-                    "type": "number",
-                    "format": "double"
-                  },
-                  "quantity": {
-                    "type": "integer",
-                    "format": "int32"
-                  },
-                  "maximum_sales_quantity": {
-                    "type": "integer",
-                    "format": "int32"
-                  }
-                }
+                "$ref": "#/components/schemas/ProductUpdatePayload"
               },
               "examples": {
                 "Update all price and active": {
@@ -324,22 +254,6 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "Product update request has been successfully submitted",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "Successful submission": {
-                    "summary": "Successful submission",
-                    "description": "Successful submission",
-                    "value": {
-                      "TEST_SKU": "9"
-                    }
-                  }
-                }
-              }
-            }
-          },
           "400": {
             "description": "BadRequest",
             "content": {
@@ -391,6 +305,22 @@
                       "error": "Bad Request",
                       "message": "Quantity must be positive for sku: TEST_SKU",
                       "requestId": "fddd3b69-2"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Product update request has been successfully submitted",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Successful submission": {
+                    "summary": "Successful submission",
+                    "description": "Successful submission",
+                    "value": {
+                      "TEST_SKU": "9"
                     }
                   }
                 }
@@ -576,200 +506,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Paged products successfully received",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "page_index": {
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "total_pages": {
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "total_records": {
-                      "type": "integer",
-                      "format": "int64"
-                    },
-                    "products": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "remote_product_id": {
-                            "type": "string"
-                          },
-                          "sku": {
-                            "type": "string"
-                          },
-                          "barcodes": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "title": {
-                            "type": "string"
-                          },
-                          "translations": {
-                            "type": "object",
-                            "additionalProperties": {
-                              "type": "string"
-                            }
-                          },
-                          "images": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "price": {
-                            "type": "number",
-                            "format": "double"
-                          },
-                          "categories": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "global_id": {
-                                  "type": "string"
-                                },
-                                "details": {
-                                  "type": "object",
-                                  "properties": {
-                                    "name": {
-                                      "type": "object",
-                                      "additionalProperties": {
-                                        "type": "string"
-                                      }
-                                    },
-                                    "description": {
-                                      "type": "object",
-                                      "additionalProperties": {
-                                        "type": "string"
-                                      }
-                                    }
-                                  }
-                                },
-                                "parent_global_id": {
-                                  "type": "string"
-                                },
-                                "active": {
-                                  "type": "boolean"
-                                },
-                                "weight": {
-                                  "type": "integer",
-                                  "format": "int32"
-                                },
-                                "image_url": {
-                                  "type": "string"
-                                }
-                              }
-                            }
-                          },
-                          "master_category_path": {
-                            "type": "object",
-                            "properties": {
-                              "id": {
-                                "type": "string"
-                              },
-                              "custom_id": {
-                                "type": "string"
-                              },
-                              "name": {
-                                "type": "string"
-                              },
-                              "path": {
-                                "type": "string"
-                              },
-                              "tags": {
-                                "type": "array",
-                                "items": {
-                                  "type": "string"
-                                }
-                              },
-                              "status": {
-                                "type": "string"
-                              },
-                              "attributes": {
-                                "type": "object",
-                                "properties": {
-                                  "display_name": {
-                                    "type": "object",
-                                    "additionalProperties": {
-                                      "type": "string"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          "active": {
-                            "type": "boolean"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "Successful request": {
-                    "summary": "Successful request",
-                    "description": "Successful request",
-                    "value": {
-                      "page_index": 1,
-                      "total_pages": 1,
-                      "total_records": 1,
-                      "products": [
-                        {
-                          "remote_product_id": "1234567",
-                          "sku": "TEST_SKU",
-                          "barcodes": [
-                            "TEST_BARCODE_1"
-                          ],
-                          "title": "TEST_NAME",
-                          "translations": {
-                            "TEST_LOCALE_1": "TEST_TITLE_1",
-                            "TEST_LOCALE_2": "TEST_TITLE_2"
-                          },
-                          "images": [],
-                          "is_active": true,
-                          "price": 30,
-                          "categories": [
-                            {
-                              "global_id": "18cad219-add0-459e-8bcf-6d6a48f57bea",
-                              "name": {
-                                "en_SG": "Chips & Dips"
-                              },
-                              "active": true
-                            }
-                          ],
-                          "master_category_path": {
-                            "id": "/packaged_foods/canned_jarred_instant_meals/",
-                            "custom_id": "609b9c52138b9f26e1405eba",
-                            "name": "Canned / Jarred / Instant Meals",
-                            "path": "/packaged_foods/",
-                            "tags": [],
-                            "status": "Active",
-                            "attributes": {
-                              "display_name": {
-                                "en_gb": "Canned / Jarred / Instant Meals"
-                              }
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
           "400": {
             "description": "BadRequest",
             "content": {
@@ -826,6 +562,82 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Paged products successfully received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedProductResult"
+                },
+                "examples": {
+                  "Successful request": {
+                    "summary": "Successful request",
+                    "description": "Successful request",
+                    "value": {
+                      "page_index": 1,
+                      "total_pages": 1,
+                      "total_records": 1,
+                      "products": [
+                        {
+                          "remote_product_id": "1234567",
+                          "sku": "TEST_SKU",
+                          "barcodes": [
+                            "TEST_BARCODE_1"
+                          ],
+                          "title": "TEST_NAME",
+                          "translations": {
+                            "TEST_LOCALE_1": "TEST_TITLE_1",
+                            "TEST_LOCALE_2": "TEST_TITLE_2"
+                          },
+                          "images": [],
+                          "is_active": true,
+                          "price": 30,
+                          "categories": [
+                            {
+                              "global_id": "18cad219-add0-459e-8bcf-6d6a48f57bea",
+                              "name": {
+                                "en_SG": "Chips & Dips"
+                              },
+                              "active": true
+                            }
+                          ],
+                          "master_category_path": {
+                            "id": "/packaged_foods/canned_jarred_instant_meals/",
+                            "custom_id": "609b9c52138b9f26e1405eba",
+                            "name": "Canned / Jarred / Instant Meals",
+                            "path": "/packaged_foods/",
+                            "tags": [],
+                            "status": "Active",
+                            "attributes": {
+                              "display_name": {
+                                "en_gb": "Canned / Jarred / Instant Meals"
+                              }
+                            },
+                            "ancestors": [
+                              {
+                                "id": "/packaged_foods/",
+                                "custom_id": "609b9c48138b9f26e1405e96",
+                                "name": "Packaged Foods",
+                                "path": "/",
+                                "tags": [],
+                                "status": "Active",
+                                "attributes": {
+                                  "display_name": {
+                                    "en_gb": "Packaged Foods"
+                                  }
+                                },
+                                "ancestors": null
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -863,55 +675,33 @@
           }
         ],
         "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "The authorization token is missing or does not have permission to operate in the requested vendorId": {
+                    "summary": "The authorization token is missing or does not have permission to operate in the requested vendorId",
+                    "description": "The authorization token is missing or does not have permission to operate in the requested vendorId",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/categories",
+                      "status": 403,
+                      "error": "Forbidden",
+                      "message": "vendor data provided in 'Authorization' header does not match the requested vendorId",
+                      "requestId": "fddd3b69-2"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "200": {
             "description": "Get vendor's categories successfully received",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "categories": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "global_id": {
-                            "type": "string"
-                          },
-                          "details": {
-                            "type": "object",
-                            "properties": {
-                              "name": {
-                                "type": "object",
-                                "additionalProperties": {
-                                  "type": "string"
-                                }
-                              },
-                              "description": {
-                                "type": "object",
-                                "additionalProperties": {
-                                  "type": "string"
-                                }
-                              }
-                            }
-                          },
-                          "parent_global_id": {
-                            "type": "string"
-                          },
-                          "active": {
-                            "type": "boolean"
-                          },
-                          "weight": {
-                            "type": "integer",
-                            "format": "int32"
-                          },
-                          "image_url": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/CategoriesResponse"
                 },
                 "examples": {
                   "Successful request": {
@@ -936,27 +726,6 @@
                           "image_url": "https://images.deliveryhero.io/image.jpg"
                         }
                       ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "The authorization token is missing or does not have permission to operate in the requested vendorId": {
-                    "summary": "The authorization token is missing or does not have permission to operate in the requested vendorId",
-                    "description": "The authorization token is missing or does not have permission to operate in the requested vendorId",
-                    "value": {
-                      "timestamp": "2022-02-28T00:00:00.000+00:00",
-                      "path": "/api/assortment/v1/vendors/12345/categories",
-                      "status": 403,
-                      "error": "Forbidden",
-                      "message": "vendor data provided in 'Authorization' header does not match the requested vendorId",
-                      "requestId": "fddd3b69-2"
                     }
                   }
                 }
@@ -1006,30 +775,7 @@
           "products": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "sku": {
-                  "type": "string"
-                },
-                "barcode": {
-                  "type": "string"
-                },
-                "active": {
-                  "type": "boolean"
-                },
-                "price": {
-                  "type": "number",
-                  "format": "double"
-                },
-                "quantity": {
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "maximum_sales_quantity": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
+              "$ref": "#/components/schemas/ProductUpdatePayload"
             }
           }
         }
@@ -1060,21 +806,7 @@
             "type": "string"
           },
           "details": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "string"
-                }
-              },
-              "description": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "string"
-                }
-              }
-            }
+            "$ref": "#/components/schemas/Details"
           },
           "parent_global_id": {
             "type": "string"
@@ -1116,14 +848,12 @@
             "type": "string"
           },
           "attributes": {
-            "type": "object",
-            "properties": {
-              "display_name": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "string"
-                }
-              }
+            "$ref": "#/components/schemas/MasterCategoryPathAttributes"
+          },
+          "ancestors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MasterCategoryPath"
             }
           }
         }
@@ -1176,80 +906,11 @@
           "categories": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "global_id": {
-                  "type": "string"
-                },
-                "details": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "object",
-                      "additionalProperties": {
-                        "type": "string"
-                      }
-                    },
-                    "description": {
-                      "type": "object",
-                      "additionalProperties": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                },
-                "parent_global_id": {
-                  "type": "string"
-                },
-                "active": {
-                  "type": "boolean"
-                },
-                "weight": {
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "image_url": {
-                  "type": "string"
-                }
-              }
+              "$ref": "#/components/schemas/Category"
             }
           },
           "master_category_path": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "custom_id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "path": {
-                "type": "string"
-              },
-              "tags": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "status": {
-                "type": "string"
-              },
-              "attributes": {
-                "type": "object",
-                "properties": {
-                  "display_name": {
-                    "type": "object",
-                    "additionalProperties": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/schemas/MasterCategoryPath"
           },
           "active": {
             "type": "boolean"
@@ -1274,121 +935,7 @@
           "products": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "remote_product_id": {
-                  "type": "string"
-                },
-                "sku": {
-                  "type": "string"
-                },
-                "barcodes": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "title": {
-                  "type": "string"
-                },
-                "translations": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
-                  }
-                },
-                "images": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "price": {
-                  "type": "number",
-                  "format": "double"
-                },
-                "categories": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "global_id": {
-                        "type": "string"
-                      },
-                      "details": {
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "type": "object",
-                            "additionalProperties": {
-                              "type": "string"
-                            }
-                          },
-                          "description": {
-                            "type": "object",
-                            "additionalProperties": {
-                              "type": "string"
-                            }
-                          }
-                        }
-                      },
-                      "parent_global_id": {
-                        "type": "string"
-                      },
-                      "active": {
-                        "type": "boolean"
-                      },
-                      "weight": {
-                        "type": "integer",
-                        "format": "int32"
-                      },
-                      "image_url": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                },
-                "master_category_path": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "custom_id": {
-                      "type": "string"
-                    },
-                    "name": {
-                      "type": "string"
-                    },
-                    "path": {
-                      "type": "string"
-                    },
-                    "tags": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "attributes": {
-                      "type": "object",
-                      "properties": {
-                        "display_name": {
-                          "type": "object",
-                          "additionalProperties": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "active": {
-                  "type": "boolean"
-                }
-              }
+              "$ref": "#/components/schemas/PagedProduct"
             }
           }
         }
@@ -1399,42 +946,7 @@
           "categories": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "global_id": {
-                  "type": "string"
-                },
-                "details": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "object",
-                      "additionalProperties": {
-                        "type": "string"
-                      }
-                    },
-                    "description": {
-                      "type": "object",
-                      "additionalProperties": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                },
-                "parent_global_id": {
-                  "type": "string"
-                },
-                "active": {
-                  "type": "boolean"
-                },
-                "weight": {
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "image_url": {
-                  "type": "string"
-                }
-              }
+              "$ref": "#/components/schemas/Category"
             }
           }
         }
