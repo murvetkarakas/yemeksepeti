@@ -1,0 +1,982 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "https://partners-me.deliveryhero.io",
+      "description": "Generated server url"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Assortment Export",
+      "description": "The Authorization header is required. It can be created in the vendor (partner) portal"
+    },
+    {
+      "name": "Categories",
+      "description": "The Authorization header is required. It can be created in the vendor portal"
+    },
+    {
+      "name": "Products",
+      "description": "The Authorization header is required. It can be created in the vendor(partner) portal"
+    }
+  ],
+  "paths": {
+    "/api/assortment/v1/vendors/{vendorId}/products-bulk": {
+      "put": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Request to update multiple product's price and active status",
+        "operationId": "updateProducts",
+        "parameters": [
+          {
+            "name": "vendorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "'sku' is a mandatory field in the payload, and one of the fields 'price' or 'active' or 'quantity' must be present",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductsUpdatePayload"
+              },
+              "examples": {
+                "Multiple product updates": {
+                  "summary": "Send multiple products update",
+                  "description": "Multiple product updates",
+                  "value": {
+                    "products": [
+                      {
+                        "sku": "TEST_SKU1",
+                        "active": true,
+                        "price": 10
+                      },
+                      {
+                        "sku": "TEST_SKU2",
+                        "price": 10
+                      },
+                      {
+                        "sku": "TEST_SKU3",
+                        "price": 6,
+                        "quantity": 40
+                      },
+                      {
+                        "sku": "TEST_SKU4",
+                        "price": 6,
+                        "quantity": 40,
+                        "maximum_sales_quantity": 10
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Bulk update request has been successfully submitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkUpdateResult"
+                },
+                "examples": {
+                  "Successful submission": {
+                    "summary": "Successful submission",
+                    "description": "Successful submission",
+                    "value": {
+                      "success": true,
+                      "job_type": "ASYNC",
+                      "job_id": 407304
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "The authorization token is missing or does not have permission to operate in the requested vendorID": {
+                    "summary": "The authorization token is missing or does not have permission to operate in the requested vendorID",
+                    "description": "The authorization token is missing or does not have permission to operate in the requested vendorID",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/products-bulk",
+                      "status": 403,
+                      "error": "Forbidden",
+                      "message": "vendor data provided in 'Authorization' header does not match the requested vendorID",
+                      "requestId": "fddd3b69-2"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "vendor data provided in 'Authorization' header is not a valid": {
+                    "summary": "vendor data provided in 'Authorization' header is not a valid",
+                    "description": "vendor data provided in 'Authorization' header is not a valid",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/products-bulk",
+                      "status": 400,
+                      "error": "Bad Request",
+                      "message": "vendor data provided in 'Authorization' header is not a valid",
+                      "requestId": "fddd3b69-2"
+                    }
+                  },
+                  "Both 'price', 'quantity' and 'active' fields not provided": {
+                    "summary": "Both 'price', 'quantity' and 'active' fields not provided",
+                    "description": "Both 'price', 'quantity' and 'active' fields not provided",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/products-bulk",
+                      "status": 400,
+                      "error": "Bad Request",
+                      "message": "At least one of the fields price and active must be present for sku: TEST_SKU",
+                      "requestId": "fddd3b69-2"
+                    }
+                  },
+                  "Price is negative": {
+                    "summary": "Price is negative",
+                    "description": "Price is negative",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/products-bulk",
+                      "status": 400,
+                      "error": "Bad Request",
+                      "message": "Price must be positive for sku: TEST_SKU",
+                      "requestId": "fddd3b69-2"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer-auth": []
+          }
+        ]
+      }
+    },
+    "/api/assortment/v1/vendors/{vendorId}/product": {
+      "put": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Request to update a product's price, quantity and active status",
+        "operationId": "updateProduct",
+        "parameters": [
+          {
+            "name": "vendorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "'sku' is a mandatory field in the payload, and one of the fields 'price' or 'active' and 'quantity' must be present",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductUpdatePayload"
+              },
+              "examples": {
+                "Update all price and active": {
+                  "summary": "Updates the price, calculates the current number and can update the active status accordingly",
+                  "description": "Update all price and active",
+                  "value": {
+                    "sku": "TEST_SKU",
+                    "price": 10,
+                    "active": true,
+                    "quantity": 3
+                  }
+                },
+                "Update both price and active": {
+                  "summary": "Updates both price and active",
+                  "description": "Update both price and active",
+                  "value": {
+                    "sku": "TEST_SKU",
+                    "price": 10,
+                    "active": true
+                  }
+                },
+                "Update price": {
+                  "summary": "Updates price, calculates the current number and can update the active status accordingly",
+                  "description": "Update price",
+                  "value": {
+                    "sku": "TEST_SKU",
+                    "price": 10,
+                    "quantity": 2
+                  }
+                },
+                "Update only price , not active": {
+                  "summary": "Updates only price, not active",
+                  "description": "Update only price , not active",
+                  "value": {
+                    "sku": "TEST_SKU",
+                    "price": 10
+                  }
+                },
+                "Update only active": {
+                  "summary": "May update only active by calculating the available quantity, not price",
+                  "description": "Update only active",
+                  "value": {
+                    "sku": "TEST_SKU",
+                    "active": true
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "BadRequest",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "vendor data provided in 'Authorization' header is not a valid": {
+                    "summary": "vendor data provided in 'Authorization' header is not a valid",
+                    "description": "vendor data provided in 'Authorization' header is not a valid",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/product",
+                      "status": 400,
+                      "error": "Bad Request",
+                      "message": "vendor data provided in 'Authorization' header is not a valid",
+                      "requestId": "fddd3b69-2"
+                    }
+                  },
+                  "Both 'price', 'quantity' and 'active' fields are not provided": {
+                    "summary": "Both 'price', 'quantity' and 'active' fields are not provided",
+                    "description": "Both 'price', 'quantity' and 'active' fields are not provided",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/product",
+                      "status": 400,
+                      "error": "Bad Request",
+                      "message": "At least one of the fields price, active and quantity must be present for sku: TEST_SKU",
+                      "requestId": "fddd3b69-2"
+                    }
+                  },
+                  "Price is negative": {
+                    "summary": "Price is negative",
+                    "description": "Price is negative",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/product",
+                      "status": 400,
+                      "error": "Bad Request",
+                      "message": "Price must be positive for sku: TEST_SKU",
+                      "requestId": "fddd3b69-2"
+                    }
+                  },
+                  "Quantity is negative": {
+                    "summary": "Quantity is negative",
+                    "description": "Quantity is negative",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/product",
+                      "status": 400,
+                      "error": "Bad Request",
+                      "message": "Quantity must be positive for sku: TEST_SKU",
+                      "requestId": "fddd3b69-2"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Product update request has been successfully submitted",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Successful submission": {
+                    "summary": "Successful submission",
+                    "description": "Successful submission",
+                    "value": {
+                      "TEST_SKU": "9"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "The authorization token is missing or does not have permission to operate in the requested vendorID": {
+                    "summary": "The authorization token is missing or does not have permission to operate in the requested vendorID",
+                    "description": "The authorization token is missing or does not have permission to operate in the requested vendorID",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/product",
+                      "status": 403,
+                      "error": "Forbidden",
+                      "message": "vendor data provided in 'Authorization' header does not match the requested vendorID",
+                      "requestId": "fddd3b69-2"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer-auth": []
+          }
+        ]
+      }
+    },
+    "/api/assortment/v1/vendors/{vendorId}/products/export": {
+      "post": {
+        "tags": [
+          "Assortment Export"
+        ],
+        "summary": "Request to create an async job to retrieve the full assortment details for a vendor. \n            The result will be communicated to the webhook configured in vendor portal once the process is finished",
+        "operationId": "createExportJob",
+        "parameters": [
+          {
+            "name": "vendorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Export job was successfully created",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Successful submission": {
+                    "summary": "Export job was created successfully and is running asynchronously.",
+                    "description": "Successful submission",
+                    "value": {
+                      "job_id": "1234"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "The authorization token is missing or does not have permission to operate in the requested vendorID": {
+                    "summary": "The authorization token is missing or does not have permission to operate in the requested vendorID",
+                    "description": "The authorization token is missing or does not have permission to operate in the requested vendorID",
+                    "value": "Access denied"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer-auth": []
+          }
+        ]
+      }
+    },
+    "/api/assortment/v1/vendors/{vendorId}/paged-products": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Retrieve assortment page of a given vendor",
+        "operationId": "getPagedProducts",
+        "parameters": [
+          {
+            "name": "vendorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "query_term",
+            "in": "query",
+            "description": "The value of text search. The vendor products retrieved are assured to be their titles containing the query or match the sku. The search is based on the provided locale",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": ""
+            },
+            "example": "Milk"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "The value locale of the field to be filtered",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "en_GB"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number used to filter the data considering the page_size. If no page is provided the page 1 will be returned",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            },
+            "example": 10
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Maximum number of results to return per page. If no value is provided, 20 will be used as default",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            },
+            "example": 10
+          },
+          {
+            "name": "category_global_ids",
+            "in": "query",
+            "description": "Comma-separated list of category global ids. The vendor products retrieved are assured to have at least one of the categories supplied. If empty, all the vendor products are considered.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": ""
+            },
+            "example": "9d283d0d-af05-4640-bf41-4cac901bfca,9d283d0d-af05-4640-bf41-4cac901bfcb"
+          },
+          {
+            "name": "expand",
+            "in": "query",
+            "description": "When value is `true` both *remote_product_id* and *master_category_path* fields are fulfilled. Otherwise these properties come in null value",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "example": true
+          },
+          {
+            "name": "is_active",
+            "in": "query",
+            "description": "`true` for only active products, `false` for only inactive products. If this parameter is not provided all products are retrieved.",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "BadRequest",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "'locale' field is empty": {
+                    "summary": "'locale' field is empty",
+                    "description": "'locale' field is empty",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/",
+                      "status": 400,
+                      "error": "Bad Request",
+                      "message": "Locale cannot be blank",
+                      "requestId": "fddd3b69-2"
+                    }
+                  },
+                  "Page should be bigger than 0": {
+                    "summary": "Page should be bigger then 0",
+                    "description": "Page should be bigger than 0",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/",
+                      "status": 400,
+                      "error": "Bad Request",
+                      "message": "Page should be a positive number",
+                      "requestId": "fddd3b69-2"
+                    }
+                  },
+                  "'pageSize' field should be between 1 and 499": {
+                    "summary": "'pageSize' field should be between 1 and 499",
+                    "description": "'pageSize' field should be between 1 and 499",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/",
+                      "status": 400,
+                      "error": "Bad Request",
+                      "message": "Page size should be a positive number that is smaller then 500",
+                      "requestId": "fddd3b69-2"
+                    }
+                  },
+                  "Claims header is missing": {
+                    "summary": "Claims header is missing",
+                    "description": "Claims header is missing",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/paged-products",
+                      "status": 400,
+                      "error": "Bad Request",
+                      "message": "Missing request header 'claims' for method parameter of type String",
+                      "requestId": "fddd3b69-2"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Paged products successfully received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedProductResult"
+                },
+                "examples": {
+                  "Successful request": {
+                    "summary": "Successful request",
+                    "description": "Successful request",
+                    "value": {
+                      "page_index": 1,
+                      "total_pages": 1,
+                      "total_records": 1,
+                      "products": [
+                        {
+                          "remote_product_id": "1234567",
+                          "sku": "TEST_SKU",
+                          "barcodes": [
+                            "TEST_BARCODE_1"
+                          ],
+                          "title": "TEST_NAME",
+                          "translations": {
+                            "TEST_LOCALE_1": "TEST_TITLE_1",
+                            "TEST_LOCALE_2": "TEST_TITLE_2"
+                          },
+                          "images": [],
+                          "is_active": true,
+                          "price": 30,
+                          "categories": [
+                            {
+                              "global_id": "18cad219-add0-459e-8bcf-6d6a48f57bea",
+                              "name": {
+                                "en_SG": "Chips & Dips"
+                              },
+                              "active": true
+                            }
+                          ],
+                          "master_category_path": {
+                            "id": "/packaged_foods/canned_jarred_instant_meals/",
+                            "custom_id": "609b9c52138b9f26e1405eba",
+                            "name": "Canned / Jarred / Instant Meals",
+                            "path": "/packaged_foods/",
+                            "tags": [],
+                            "status": "Active",
+                            "attributes": {
+                              "display_name": {
+                                "en_gb": "Canned / Jarred / Instant Meals"
+                              }
+                            },
+                            "ancestors": [
+                              {
+                                "id": "/packaged_foods/",
+                                "custom_id": "609b9c48138b9f26e1405e96",
+                                "name": "Packaged Foods",
+                                "path": "/",
+                                "tags": [],
+                                "status": "Active",
+                                "attributes": {
+                                  "display_name": {
+                                    "en_gb": "Packaged Foods"
+                                  }
+                                },
+                                "ancestors": null
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer-auth": []
+          }
+        ]
+      }
+    },
+    "/api/assortment/v1/vendors/{vendorId}/categories": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "Retrieves the categories of a given vendor",
+        "operationId": "getCategories",
+        "parameters": [
+          {
+            "name": "vendorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "only_leafs",
+            "in": "query",
+            "description": "Boolean value indicating whether or not to include only leaf categories.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "The authorization token is missing or does not have permission to operate in the requested vendorId": {
+                    "summary": "The authorization token is missing or does not have permission to operate in the requested vendorId",
+                    "description": "The authorization token is missing or does not have permission to operate in the requested vendorId",
+                    "value": {
+                      "timestamp": "2022-02-28T00:00:00.000+00:00",
+                      "path": "/api/assortment/v1/vendors/12345/categories",
+                      "status": 403,
+                      "error": "Forbidden",
+                      "message": "vendor data provided in 'Authorization' header does not match the requested vendorId",
+                      "requestId": "fddd3b69-2"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Get vendor's categories successfully received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoriesResponse"
+                },
+                "examples": {
+                  "Successful request": {
+                    "summary": "Successful request",
+                    "description": "Successful request",
+                    "value": {
+                      "categories": [
+                        {
+                          "global_id": "9306af43-0139-4070-be30-c461da767abe",
+                          "details": {
+                            "name": {
+                              "en_AT": "Sticks"
+                            },
+                            "description": {
+                              "en_AT": "Sticks"
+                            }
+                          },
+                          "parent_global_id": "18cad219-add0-459e-8bcf-6d6a48f57bea",
+                          "active": true,
+                          "deleted": false,
+                          "weight": 10,
+                          "image_url": "https://images.deliveryhero.io/image.jpg"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer-auth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProductUpdatePayload": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string"
+          },
+          "barcode": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maximum_sales_quantity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ProductsUpdatePayload": {
+        "type": "object",
+        "properties": {
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductUpdatePayload"
+            }
+          }
+        }
+      },
+      "BulkUpdateResult": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "job_type": {
+            "type": "string",
+            "enum": [
+              "ASYNC",
+              "SYNC"
+            ]
+          },
+          "job_id": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "global_id": {
+            "type": "string"
+          },
+          "details": {
+            "$ref": "#/components/schemas/Details"
+          },
+          "parent_global_id": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "weight": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "image_url": {
+            "type": "string"
+          }
+        }
+      },
+      "MasterCategoryPath": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "custom_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/MasterCategoryPathAttributes"
+          },
+          "ancestors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MasterCategoryPath"
+            }
+          }
+        }
+      },
+      "MasterCategoryPathAttributes": {
+        "type": "object",
+        "properties": {
+          "display_name": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PagedProduct": {
+        "type": "object",
+        "properties": {
+          "remote_product_id": {
+            "type": "string"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "barcodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "title": {
+            "type": "string"
+          },
+          "translations": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Category"
+            }
+          },
+          "master_category_path": {
+            "$ref": "#/components/schemas/MasterCategoryPath"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PagedProductResult": {
+        "type": "object",
+        "properties": {
+          "page_index": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total_pages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total_records": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PagedProduct"
+            }
+          }
+        }
+      },
+      "CategoriesResponse": {
+        "type": "object",
+        "properties": {
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Category"
+            }
+          }
+        }
+      },
+      "Details": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearer-auth": {
+        "type": "http",
+        "name": "Authorization",
+        "in": "header",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
